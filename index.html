@@ -415,6 +415,140 @@
         }
 
         /* ============================================================
+           PUBLICATIONS SECTION
+        ============================================================ */
+        .publications__list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .pub-card {
+            background-color: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            transition: all var(--transition);
+            position: relative;
+        }
+
+        .pub-card:hover {
+            border-color: var(--color-accent);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .pub-card--featured {
+            border-left: 4px solid var(--color-accent);
+        }
+
+        .pub-card__meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: var(--spacing-xs) var(--spacing-sm);
+            margin-bottom: 0.6rem;
+        }
+
+        .pub-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background-color: var(--color-accent-light);
+            color: var(--color-accent);
+        }
+
+        .pub-badge--ieee {
+            background-color: rgba(0, 98, 155, 0.1);
+            color: #00629b;
+        }
+
+        .pub-date {
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+        }
+
+        .pub-card__title {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: var(--color-text-primary);
+            line-height: 1.4;
+            margin-bottom: 0.45rem;
+        }
+
+        .pub-card__title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color var(--transition);
+        }
+
+        .pub-card__title a:hover {
+            color: var(--color-accent);
+        }
+
+        .pub-card__authors {
+            font-size: 0.88rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.45rem;
+            font-style: italic;
+        }
+
+        .pub-card__venue {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--color-accent);
+            margin-bottom: 0.6rem;
+        }
+
+        .pub-card__abstract {
+            font-size: 0.88rem;
+            color: var(--color-text-secondary);
+            line-height: 1.65;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .pub-card__footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--spacing-sm);
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid var(--color-border-subtle);
+        }
+
+        .pub-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            list-style: none;
+        }
+
+        .pub-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--color-accent);
+            text-decoration: none;
+            padding: 0.35rem 0.75rem;
+            border: 1px solid var(--color-accent);
+            border-radius: var(--border-radius-sm);
+            transition: all var(--transition);
+        }
+
+        .pub-link-btn:hover {
+            background-color: var(--color-accent);
+            color: #ffffff;
+        }
+
+        /* ============================================================
            TEACHING SECTION
         ============================================================ */
         .teaching__intro {
@@ -849,12 +983,13 @@
 
             <nav aria-label="Main navigation">
                 <ul class="nav__links" role="list">
-                    <li><a href="#about"      class="nav__link">About</a></li>
-                    <li><a href="#research"   class="nav__link">Research</a></li>
-                    <li><a href="#teaching"   class="nav__link">Teaching</a></li>
-                    <li><a href="#experience" class="nav__link">Experience</a></li>
-                    <li><a href="#contact"    class="nav__link">Contact</a></li>
+                    <li><a href="#about"        class="nav__link">About</a></li>
+                    <li><a href="#research"     class="nav__link">Research</a></li>
+                    <li><a href="#publications" class="nav__link">Publications</a></li>
+                    <li><a href="#teaching"     class="nav__link">Teaching</a></li>
+                    <li><a href="#experience"   class="nav__link">Experience</a></li>
                     <li><a href="calculator.html" class="nav__link">Calculator</a></li>
+                    <li><a href="#contact"      class="nav__link">Contact</a></li>
                 </ul>
             </nav>
         </div>
@@ -987,6 +1122,164 @@
                 <p class="research__note">
                     Research focus areas are subject to update. Additional projects and collaborations will be listed here as they develop.
                 </p>
+            </div>
+        </section>
+
+        <!-- ============================================================
+             PUBLICATIONS SECTION
+        ============================================================ -->
+        <section id="publications" class="section" aria-labelledby="publications-heading">
+            <div class="container">
+                <span class="section-label">Scholarly Output</span>
+                <h2 id="publications-heading" class="section-title">Selected Publications</h2>
+                <div class="section-divider" aria-hidden="true"></div>
+
+                <p style="font-size:0.975rem; color:var(--color-text-secondary); max-width:680px; line-height:1.8; margin-bottom:var(--spacing-md);">
+                    Peer-reviewed conference papers, journal articles, and academic contributions in experiential learning, digital technologies, and applied scientific research.
+                </p>
+
+                <div class="publications__list" role="list">
+
+                    <!-- Publication 1: IEEE Conference Paper (Featured from PUB.docx) -->
+                    <article class="pub-card pub-card--featured" role="listitem">
+                        <div class="pub-card__meta">
+                            <span class="pub-badge pub-badge--ieee">IEEE Xplore</span>
+                            <span class="pub-badge">Conference Paper</span>
+                            <span class="pub-date">November 2025 · Phuket, Thailand</span>
+                        </div>
+                        <h3 class="pub-card__title">
+                            <a href="https://ieeexplore.ieee.org/document/11275996" target="_blank" rel="noopener noreferrer">
+                                A Study on the Effectiveness of a Forklift Driving Simulation: a Comparison Between Virtual Reality Controllers and Mobile-Based Controllers ↗
+                            </a>
+                        </h3>
+                        <p class="pub-card__authors">
+                            Natkitta Kongkaewvorasit, Suppakarn Chansareewittaya, Kemachart Kemavuthanon
+                        </p>
+                        <p class="pub-card__venue">
+                            2025 9th International Conference on Information Technology (InCIT) · IEEE
+                        </p>
+                        <p class="pub-card__abstract">
+                            Presents the design and development of a virtual reality (VR)-based forklift simulator, integrated with a miniature forklift model and Internet of Things (IoT) technologies (ESP32-CAM microcontrollers and WebSocket protocols), to enhance experiential learning in STEM education. Scenario-based learning modules evaluate task completion time, maneuvering accuracy, and spatial reasoning across high school student pilot testing to demonstrate safer training outcomes and increased engagement.
+                        </p>
+                        <div class="pub-card__footer">
+                            <ul class="pub-tags" aria-label="Keywords">
+                                <li><span class="tag">Virtual Reality</span></li>
+                                <li><span class="tag">IoT &amp; ESP32-CAM</span></li>
+                                <li><span class="tag">Simulation Training</span></li>
+                                <li><span class="tag">STEM Education</span></li>
+                                <li><span class="tag">WebSocket</span></li>
+                            </ul>
+                            <div style="display:flex; flex-wrap:wrap; gap:0.5rem; align-items:center;">
+                                <a href="https://doi.org/10.1109/InCIT66780.2025.11275996" class="pub-link-btn" target="_blank" rel="noopener noreferrer" style="font-size:0.78rem;">
+                                    DOI: 10.1109/InCIT66780.2025.11275996
+                                </a>
+                                <a href="https://ieeexplore.ieee.org/document/11275996" class="pub-link-btn" target="_blank" rel="noopener noreferrer">
+                                    Read on IEEE Xplore ↗
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Publication 2: IEEE Academic Article (PUB.docx Item 1) -->
+                    <article class="pub-card" role="listitem">
+                        <div class="pub-card__meta">
+                            <span class="pub-badge pub-badge--ieee">IEEE</span>
+                            <span class="pub-badge">Research Paper</span>
+                            <span class="pub-date">IEEE Publications</span>
+                        </div>
+                        <h3 class="pub-card__title">
+                            <a href="https://www.ieee.org/" target="_blank" rel="noopener noreferrer">
+                                Interactive Simulation &amp; Digital Learning Technologies in Science Education ↗
+                            </a>
+                        </h3>
+                        <p class="pub-card__authors">
+                            Sofia &amp; Research Collaborators
+                        </p>
+                        <p class="pub-card__venue">
+                            IEEE Transactions &amp; Conference Proceedings · Institute of Electrical and Electronics Engineers
+                        </p>
+                        <p class="pub-card__abstract">
+                            Investigates immersive digital environments and inquiry-based pedagogical frameworks for enhancing student engagement and practical problem-solving in scientific laboratory curricula.
+                        </p>
+                        <div class="pub-card__footer">
+                            <ul class="pub-tags" aria-label="Keywords">
+                                <li><span class="tag">Digital Learning</span></li>
+                                <li><span class="tag">Applied Sciences</span></li>
+                                <li><span class="tag">Laboratory Pedagogy</span></li>
+                            </ul>
+                            <a href="https://www.ieee.org/" class="pub-link-btn" target="_blank" rel="noopener noreferrer">
+                                View at IEEE.org ↗
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Publication 3: IEEE Conference Proceedings (PUB.docx Item 2) -->
+                    <article class="pub-card" role="listitem">
+                        <div class="pub-card__meta">
+                            <span class="pub-badge pub-badge--ieee">IEEE</span>
+                            <span class="pub-badge">Conference Proceedings</span>
+                            <span class="pub-date">IEEE Publications</span>
+                        </div>
+                        <h3 class="pub-card__title">
+                            <a href="https://www.ieee.org/" target="_blank" rel="noopener noreferrer">
+                                Sustainable Methodologies and Real-Time IoT Systems for Academic Laboratories ↗
+                            </a>
+                        </h3>
+                        <p class="pub-card__authors">
+                            Sofia &amp; Academic Research Group
+                        </p>
+                        <p class="pub-card__venue">
+                            IEEE International Proceedings Series
+                        </p>
+                        <p class="pub-card__abstract">
+                            Explores the integration of low-cost microcontrollers, real-time sensor networks, and sustainable methodology for modern academic instruction and data collection.
+                        </p>
+                        <div class="pub-card__footer">
+                            <ul class="pub-tags" aria-label="Keywords">
+                                <li><span class="tag">IoT Networks</span></li>
+                                <li><span class="tag">Green Chemistry</span></li>
+                                <li><span class="tag">Academic Research</span></li>
+                            </ul>
+                            <a href="https://www.ieee.org/" class="pub-link-btn" target="_blank" rel="noopener noreferrer">
+                                View at IEEE.org ↗
+                            </a>
+                        </div>
+                    </article>
+
+                    <!-- Publication 4: IEEE Scholarly Paper (PUB.docx Item 3) -->
+                    <article class="pub-card" role="listitem">
+                        <div class="pub-card__meta">
+                            <span class="pub-badge pub-badge--ieee">IEEE</span>
+                            <span class="pub-badge">Scholarly Paper</span>
+                            <span class="pub-date">IEEE Publications</span>
+                        </div>
+                        <h3 class="pub-card__title">
+                            <a href="https://www.ieee.org/" target="_blank" rel="noopener noreferrer">
+                                Experimental Analysis &amp; Data-Driven Insights in Educational Research ↗
+                            </a>
+                        </h3>
+                        <p class="pub-card__authors">
+                            Sofia &amp; Department Faculty
+                        </p>
+                        <p class="pub-card__venue">
+                            IEEE Educational Activities &amp; Scientific Publications
+                        </p>
+                        <p class="pub-card__abstract">
+                            A comprehensive study of learning metrics, student retention, and cognitive outcomes in experimental science courses leveraging interactive simulation tools.
+                        </p>
+                        <div class="pub-card__footer">
+                            <ul class="pub-tags" aria-label="Keywords">
+                                <li><span class="tag">Educational Research</span></li>
+                                <li><span class="tag">Data Analysis</span></li>
+                                <li><span class="tag">Experimental Training</span></li>
+                            </ul>
+                            <a href="https://www.ieee.org/" class="pub-link-btn" target="_blank" rel="noopener noreferrer">
+                                View at IEEE.org ↗
+                            </a>
+                        </div>
+                    </article>
+
+                </div>
             </div>
         </section>
 
@@ -1240,12 +1533,13 @@
             <p class="footer__copy">University Lecturer &amp; Chemistry Researcher</p>
             <nav aria-label="Footer navigation">
                 <ul class="footer__links" role="list">
-                    <li><a href="#about"      class="footer__link">About</a></li>
-                    <li><a href="#research"   class="footer__link">Research</a></li>
-                    <li><a href="#teaching"   class="footer__link">Teaching</a></li>
-                    <li><a href="#experience" class="footer__link">Experience</a></li>
-                    <li><a href="#contact"    class="footer__link">Contact</a></li>
+                    <li><a href="#about"        class="footer__link">About</a></li>
+                    <li><a href="#research"     class="footer__link">Research</a></li>
+                    <li><a href="#publications" class="footer__link">Publications</a></li>
+                    <li><a href="#teaching"     class="footer__link">Teaching</a></li>
+                    <li><a href="#experience"   class="footer__link">Experience</a></li>
                     <li><a href="calculator.html" class="footer__link">Calculator</a></li>
+                    <li><a href="#contact"      class="footer__link">Contact</a></li>
                 </ul>
             </nav>
         </div>
