@@ -1,0 +1,2390 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- SEO Meta Tags -->
+    <title>Scientific Calculator — Sofia | Research & Mathematics</title>
+    <meta name="description" content="High-precision scientific calculator with trigonometry, logarithms, memory registers, scientific constants, and calculation history.">
+    <link rel="icon" type="image/x-icon" href="assets/images/icon/icon.ico">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           CSS RESET & THEME TOKENS
+        ============================================================ */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --font-ui: 'Outfit', system-ui, -apple-system, sans-serif;
+            --font-mono: 'Fira Code', 'JetBrains Mono', Consolas, monospace;
+
+            --transition-fast: 0.12s ease;
+            --transition-normal: 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+            --transition-slow: 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-xl: 22px;
+            --radius-full: 9999px;
+        }
+
+        /* Dark OLED / Cyber-Academic Theme */
+        [data-theme="dark"] {
+            --bg-body: #090d16;
+            --bg-glow-1: rgba(37, 99, 235, 0.16);
+            --bg-glow-2: rgba(14, 165, 233, 0.13);
+            --bg-glow-3: rgba(168, 85, 247, 0.1);
+
+            --calc-surface: rgba(15, 23, 42, 0.84);
+            --calc-border: rgba(255, 255, 255, 0.08);
+            --calc-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.08);
+            --calc-shadow: 0 20px 45px -10px rgba(0, 0, 0, 0.7), 0 0 30px rgba(14, 165, 233, 0.1);
+
+            --screen-bg: rgba(9, 13, 22, 0.95);
+            --screen-border: rgba(255, 255, 255, 0.06);
+            --screen-text-primary: #f8fafc;
+            --screen-text-secondary: #94a3b8;
+            --screen-text-preview: #38bdf8;
+            --screen-text-error: #fb7185;
+
+            /* Key Color Archetypes */
+            --key-num-bg: rgba(30, 41, 59, 0.72);
+            --key-num-hover: rgba(51, 65, 85, 0.92);
+            --key-num-text: #f1f5f9;
+            --key-num-border: rgba(255, 255, 255, 0.06);
+
+            --key-sci-bg: rgba(23, 32, 51, 0.75);
+            --key-sci-hover: rgba(37, 51, 80, 0.95);
+            --key-sci-text: #93c5fd;
+            --key-sci-border: rgba(59, 130, 246, 0.16);
+
+            --key-op-bg: rgba(30, 58, 110, 0.52);
+            --key-op-hover: rgba(37, 99, 235, 0.75);
+            --key-op-text: #60a5fa;
+            --key-op-border: rgba(96, 165, 250, 0.22);
+
+            --key-danger-bg: rgba(159, 18, 57, 0.35);
+            --key-danger-hover: rgba(225, 29, 72, 0.65);
+            --key-danger-text: #fda4af;
+            --key-danger-border: rgba(244, 63, 94, 0.32);
+
+            --key-equals-bg: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            --key-equals-hover: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+            --key-equals-text: #ffffff;
+            --key-equals-shadow: 0 4px 18px rgba(14, 165, 233, 0.45);
+
+            --badge-bg: rgba(255, 255, 255, 0.05);
+            --badge-active-bg: rgba(14, 165, 233, 0.22);
+            --badge-active-text: #38bdf8;
+            --badge-active-border: rgba(56, 189, 248, 0.4);
+
+            --drawer-bg: rgba(15, 23, 42, 0.96);
+            --drawer-border: rgba(255, 255, 255, 0.09);
+            --item-hover-bg: rgba(255, 255, 255, 0.04);
+            --text-muted: #64748b;
+        }
+
+        /* Light Academic Theme */
+        [data-theme="light"] {
+            --bg-body: #f1f5f9;
+            --bg-glow-1: rgba(44, 95, 138, 0.14);
+            --bg-glow-2: rgba(99, 102, 241, 0.09);
+            --bg-glow-3: rgba(14, 165, 233, 0.1);
+
+            --calc-surface: rgba(255, 255, 255, 0.92);
+            --calc-border: rgba(226, 232, 240, 0.9);
+            --calc-inner-glow: inset 0 1px 1px rgba(255, 255, 255, 0.8);
+            --calc-shadow: 0 18px 40px -10px rgba(30, 41, 59, 0.12), 0 0 20px rgba(44, 95, 138, 0.06);
+
+            --screen-bg: #f8fafc;
+            --screen-border: #e2e8f0;
+            --screen-text-primary: #0f172a;
+            --screen-text-secondary: #64748b;
+            --screen-text-preview: #0284c7;
+            --screen-text-error: #e11d48;
+
+            --key-num-bg: #ffffff;
+            --key-num-hover: #f8fafc;
+            --key-num-text: #1e293b;
+            --key-num-border: #e2e8f0;
+
+            --key-sci-bg: #f1f5f9;
+            --key-sci-hover: #e2e8f0;
+            --key-sci-text: #2563eb;
+            --key-sci-border: #cbd5e1;
+
+            --key-op-bg: #e0f2fe;
+            --key-op-hover: #bae6fd;
+            --key-op-text: #0369a1;
+            --key-op-border: #7dd3fc;
+
+            --key-danger-bg: #ffe4e6;
+            --key-danger-hover: #fecdd3;
+            --key-danger-text: #e11d48;
+            --key-danger-border: #fda4af;
+
+            --key-equals-bg: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            --key-equals-hover: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            --key-equals-text: #ffffff;
+            --key-equals-shadow: 0 4px 16px rgba(37, 99, 235, 0.35);
+
+            --badge-bg: #e2e8f0;
+            --badge-active-bg: #e0f2fe;
+            --badge-active-text: #0284c7;
+            --badge-active-border: #38bdf8;
+
+            --drawer-bg: rgba(255, 255, 255, 0.98);
+            --drawer-border: #e2e8f0;
+            --item-hover-bg: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        /* ============================================================
+           PAGE BASE & AMBIENT EFFECTS
+        ============================================================ */
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-body);
+            color: var(--screen-text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color var(--transition-slow);
+        }
+
+        .ambient-glow {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.8;
+            animation: orbFloat 20s ease-in-out infinite alternate;
+        }
+
+        .orb--1 {
+            width: 480px;
+            height: 480px;
+            top: -120px;
+            left: -100px;
+            background: var(--bg-glow-1);
+        }
+
+        .orb--2 {
+            width: 520px;
+            height: 520px;
+            bottom: -140px;
+            right: -100px;
+            background: var(--bg-glow-2);
+            animation-duration: 25s;
+            animation-direction: alternate-reverse;
+        }
+
+        .orb--3 {
+            width: 360px;
+            height: 360px;
+            top: 35%;
+            left: 55%;
+            background: var(--bg-glow-3);
+            animation-duration: 22s;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(35px, 25px) scale(1.06); }
+            100% { transform: translate(-25px, 50px) scale(0.96); }
+        }
+
+        /* ============================================================
+           HEADER & NAVIGATION BAR
+        ============================================================ */
+        .site-header {
+            position: relative;
+            z-index: 20;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0.85rem 1.25rem 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .header-brand-group {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--screen-text-secondary);
+            text-decoration: none;
+            padding: 0.45rem 0.8rem;
+            border-radius: var(--radius-full);
+            background: var(--badge-bg);
+            border: 1px solid var(--calc-border);
+            backdrop-filter: blur(12px);
+            transition: all var(--transition-fast);
+        }
+
+        .back-link:hover {
+            color: var(--screen-text-primary);
+            border-color: var(--screen-text-preview);
+            transform: translateX(-2px);
+        }
+
+        .app-title-wrap {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+
+        .app-tag {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--screen-text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .icon-btn {
+            background: var(--badge-bg);
+            border: 1px solid var(--calc-border);
+            color: var(--screen-text-secondary);
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-fast);
+            position: relative;
+        }
+
+        .icon-btn:hover {
+            color: var(--screen-text-primary);
+            border-color: var(--screen-text-preview);
+            transform: translateY(-1px);
+        }
+
+        .icon-btn:active {
+            transform: translateY(1px);
+        }
+
+        .icon-btn.active {
+            color: var(--badge-active-text);
+            border-color: var(--badge-active-border);
+            background: var(--badge-active-bg);
+        }
+
+        .icon-btn svg {
+            width: 18px;
+            height: 18px;
+            stroke-width: 2;
+            fill: none;
+            stroke: currentColor;
+        }
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tip);
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(4px);
+            background: rgba(15, 23, 42, 0.95);
+            color: #f8fafc;
+            font-size: 0.72rem;
+            padding: 3px 7px;
+            border-radius: 5px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: opacity var(--transition-fast), transform var(--transition-fast);
+            z-index: 50;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ============================================================
+           WORKSPACE & CALCULATOR CHASSIS
+        ============================================================ */
+        .workspace {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0.25rem auto 1.5rem;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 310px;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        @media (max-width: 990px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .calculator-container {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+            background: var(--calc-surface);
+            border: 1px solid var(--calc-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--calc-shadow), var(--calc-inner-glow);
+            backdrop-filter: blur(24px);
+            padding: 1.15rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            position: relative;
+        }
+
+        /* ============================================================
+           DISPLAY UNIT
+        ============================================================ */
+        .calc-display {
+            background: var(--screen-bg);
+            border: 1px solid var(--screen-border);
+            border-radius: var(--radius-lg);
+            padding: 0.75rem 1.15rem 0.65rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .display-status-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 22px;
+        }
+
+        .badges-group {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .status-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 2px 7px;
+            border-radius: 5px;
+            background: var(--badge-bg);
+            color: var(--screen-text-secondary);
+            border: 1px solid transparent;
+            cursor: default;
+            user-select: none;
+            transition: all var(--transition-fast);
+        }
+
+        .status-badge.clickable {
+            cursor: pointer;
+        }
+
+        .status-badge.clickable:hover {
+            color: var(--screen-text-primary);
+            border-color: var(--calc-border);
+        }
+
+        .status-badge.active {
+            background: var(--badge-active-bg);
+            color: var(--badge-active-text);
+            border-color: var(--badge-active-border);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
+        }
+
+        .display-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .display-copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--screen-text-secondary);
+            cursor: pointer;
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.72rem;
+            font-family: var(--font-ui);
+            transition: color var(--transition-fast);
+        }
+
+        .display-copy-btn:hover {
+            color: var(--screen-text-preview);
+        }
+
+        .display-copy-btn svg {
+            width: 13px;
+            height: 13px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .expression-scroll {
+            width: 100%;
+            overflow-x: auto;
+            text-align: right;
+            padding-bottom: 1px;
+            scrollbar-width: thin;
+        }
+
+        .expression-text {
+            font-family: var(--font-mono);
+            font-size: 1.02rem;
+            font-weight: 500;
+            color: var(--screen-text-secondary);
+            white-space: nowrap;
+            letter-spacing: 0.03em;
+            min-height: 1.4rem;
+            display: inline-block;
+        }
+
+        .preview-line {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            min-height: 1.1rem;
+        }
+
+        .preview-text {
+            font-family: var(--font-mono);
+            font-size: 0.86rem;
+            font-weight: 400;
+            color: var(--screen-text-preview);
+            opacity: 0.85;
+            letter-spacing: 0.02em;
+        }
+
+        .result-container {
+            width: 100%;
+            overflow-x: auto;
+            text-align: right;
+            scrollbar-width: none;
+        }
+
+        .result-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .result-text {
+            font-family: var(--font-mono);
+            font-size: clamp(1.75rem, 3.8vw, 2.25rem);
+            font-weight: 600;
+            color: var(--screen-text-primary);
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+            line-height: 1.15;
+            transition: font-size var(--transition-fast);
+        }
+
+        .result-text.error {
+            color: var(--screen-text-error);
+            font-size: 1.5rem;
+        }
+
+        /* ============================================================
+           KEYPAD GRID
+        ============================================================ */
+        .keypad {
+            display: flex;
+            flex-direction: column;
+            gap: 0.42rem;
+            user-select: none;
+        }
+
+        .key-row {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.42rem;
+        }
+
+        @media (max-width: 680px) {
+            .key-row {
+                gap: 0.28rem;
+            }
+        }
+
+        .btn-key {
+            appearance: none;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            padding: 0.55rem 0.2rem;
+            min-height: 42px;
+            font-family: var(--font-ui);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            outline: none;
+            transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn-key:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-key:active,
+        .btn-key.active-press {
+            transform: translateY(1px) scale(0.97);
+        }
+
+        .btn-key:focus-visible {
+            box-shadow: 0 0 0 2px var(--screen-text-preview);
+        }
+
+        .btn-sci {
+            background: var(--key-sci-bg);
+            color: var(--key-sci-text);
+            border-color: var(--key-sci-border);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-sci:hover {
+            background: var(--key-sci-hover);
+        }
+
+        .btn-sci.active-mode {
+            background: var(--badge-active-bg);
+            color: var(--badge-active-text);
+            border-color: var(--badge-active-border);
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+
+        .btn-num {
+            background: var(--key-num-bg);
+            color: var(--key-num-text);
+            border-color: var(--key-num-border);
+            font-size: 1.1rem;
+            font-family: var(--font-mono);
+            font-weight: 600;
+        }
+
+        .btn-num:hover {
+            background: var(--key-num-hover);
+        }
+
+        .btn-op {
+            background: var(--key-op-bg);
+            color: var(--key-op-text);
+            border-color: var(--key-op-border);
+            font-size: 1.2rem;
+            font-family: var(--font-mono);
+        }
+
+        .btn-op:hover {
+            background: var(--key-op-hover);
+        }
+
+        .btn-mem {
+            background: var(--key-sci-bg);
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .btn-danger {
+            background: var(--key-danger-bg);
+            color: var(--key-danger-text);
+            border-color: var(--key-danger-border);
+            font-weight: 700;
+        }
+
+        .btn-danger:hover {
+            background: var(--key-danger-hover);
+        }
+
+        .btn-equals {
+            background: var(--key-equals-bg);
+            color: var(--key-equals-text);
+            box-shadow: var(--key-equals-shadow);
+            font-size: 1.35rem;
+            font-weight: 700;
+        }
+
+        .btn-equals:hover {
+            background: var(--key-equals-hover);
+            box-shadow: 0 5px 20px rgba(14, 165, 233, 0.65);
+        }
+
+        sup, sub {
+            font-size: 0.68em;
+            line-height: 0;
+            position: relative;
+            vertical-align: baseline;
+        }
+        sup { top: -0.5em; }
+        sub { bottom: -0.25em; }
+
+        @media (max-width: 580px) {
+            .calculator-container {
+                padding: 0.85rem 0.65rem;
+                border-radius: var(--radius-lg);
+            }
+            .btn-key {
+                min-height: 40px;
+                padding: 0.45rem 0.15rem;
+                font-size: 0.8rem;
+            }
+            .btn-num {
+                font-size: 0.95rem;
+            }
+            .btn-op {
+                font-size: 1.05rem;
+            }
+        }
+
+        /* ============================================================
+           SIDEBAR PANELS (History, Constants, Converter)
+        ============================================================ */
+        .side-panels-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 310px;
+        }
+
+        @media (max-width: 990px) {
+            .side-panels-wrap {
+                width: 100%;
+                max-width: 720px;
+                margin: 0 auto;
+            }
+        }
+
+        .panel-card {
+            background: var(--calc-surface);
+            border: 1px solid var(--calc-border);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--calc-shadow);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        .panel-header {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--calc-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: var(--screen-text-primary);
+        }
+
+        .panel-title svg {
+            width: 15px;
+            height: 15px;
+            stroke: var(--screen-text-preview);
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .panel-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .panel-btn {
+            background: none;
+            border: none;
+            color: var(--screen-text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 3px 6px;
+            border-radius: 4px;
+            transition: color var(--transition-fast);
+        }
+
+        .panel-btn:hover {
+            color: var(--screen-text-primary);
+        }
+
+        .panel-body {
+            padding: 0.75rem 0.85rem;
+            max-height: 290px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+            scrollbar-width: thin;
+        }
+
+        .history-item {
+            background: var(--item-hover-bg);
+            border: 1px solid var(--calc-border);
+            border-radius: var(--radius-sm);
+            padding: 0.55rem 0.75rem;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+            transition: all var(--transition-fast);
+        }
+
+        .history-item:hover {
+            border-color: var(--screen-text-preview);
+            transform: translateX(2px);
+        }
+
+        .hist-expr {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--screen-text-secondary);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .hist-res {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--screen-text-preview);
+            text-align: right;
+        }
+
+        .history-empty {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            text-align: center;
+            padding: 1.8rem 1rem;
+        }
+
+        .constants-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.4rem;
+        }
+
+        .constant-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.7rem;
+            border-radius: var(--radius-sm);
+            background: var(--item-hover-bg);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .constant-item:hover {
+            border-color: var(--badge-active-border);
+            background: var(--badge-active-bg);
+        }
+
+        .constant-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1px;
+        }
+
+        .constant-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--screen-text-primary);
+        }
+
+        .constant-desc {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .constant-val {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--screen-text-preview);
+            font-weight: 500;
+        }
+
+        .panel-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--calc-border);
+            background: var(--badge-bg);
+        }
+
+        .panel-tab {
+            flex: 1;
+            padding: 0.6rem 0.5rem;
+            background: none;
+            border: none;
+            font-family: var(--font-ui);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--screen-text-secondary);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all var(--transition-fast);
+        }
+
+        .panel-tab.active {
+            color: var(--screen-text-preview);
+            border-bottom-color: var(--screen-text-preview);
+            background: var(--calc-surface);
+        }
+
+        .converter-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .converter-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.45rem;
+        }
+
+        .converter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+
+        .converter-field label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--screen-text-secondary);
+        }
+
+        .converter-field input,
+        .converter-field select {
+            background: var(--screen-bg);
+            border: 1px solid var(--calc-border);
+            color: var(--screen-text-primary);
+            padding: 0.45rem 0.6rem;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .converter-field input:focus,
+        .converter-field select:focus {
+            border-color: var(--screen-text-preview);
+        }
+
+        /* ============================================================
+           MODAL & TOAST
+        ============================================================ */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--transition-normal);
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--drawer-bg);
+            border: 1px solid var(--drawer-border);
+            border-radius: var(--radius-xl);
+            max-width: 480px;
+            width: 100%;
+            padding: 1.35rem;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+            transform: scale(0.94);
+            transition: transform var(--transition-normal);
+        }
+
+        .modal-overlay.open .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem;
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.6rem;
+            font-size: 0.82rem;
+        }
+
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.4rem 0.55rem;
+            background: var(--item-hover-bg);
+            border-radius: var(--radius-sm);
+        }
+
+        kbd {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            background: var(--screen-bg);
+            border: 1px solid var(--calc-border);
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: var(--screen-text-preview);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(14, 165, 233, 0.95);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.82rem;
+            padding: 0.55rem 1.15rem;
+            border-radius: var(--radius-full);
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.4);
+            pointer-events: none;
+            opacity: 0;
+            transition: all var(--transition-fast);
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Ambient Lighting Orbs -->
+    <div class="ambient-glow" aria-hidden="true">
+        <div class="orb orb--1"></div>
+        <div class="orb orb--2"></div>
+        <div class="orb orb--3"></div>
+    </div>
+
+    <!-- Header & Navigation Bar -->
+    <header class="site-header" role="banner">
+        <div class="header-brand-group">
+            <a href="index.html" class="back-link" title="Return to Academic Portfolio">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Portfolio</span>
+            </a>
+            <div class="app-title-wrap">
+                <h1 class="app-title">Sofia's Scientific Lab</h1>
+                <span class="app-tag">High-Precision Computational Suite</span>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <!-- Audio click toggle -->
+            <button id="soundToggleBtn" class="icon-btn tooltip active" data-tip="Sound FX: On" aria-label="Toggle Sound Effects">
+                <svg id="soundIcon" viewBox="0 0 24 24">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+            </button>
+
+            <!-- Keyboard shortcuts help -->
+            <button id="shortcutsBtn" class="icon-btn tooltip" data-tip="Keyboard Shortcuts" aria-label="View Keyboard Shortcuts">
+                <svg viewBox="0 0 24 24">
+                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                    <line x1="6" y1="8" x2="6.01" y2="8"></line>
+                    <line x1="10" y1="8" x2="10.01" y2="8"></line>
+                    <line x1="14" y1="8" x2="14.01" y2="8"></line>
+                    <line x1="18" y1="8" x2="18.01" y2="8"></line>
+                    <line x1="6" y1="12" x2="6.01" y2="12"></line>
+                    <line x1="18" y1="12" x2="18.01" y2="12"></line>
+                    <line x1="10" y1="16" x2="14" y2="16"></line>
+                </svg>
+            </button>
+
+            <!-- Light / Dark Theme toggle -->
+            <button id="themeToggleBtn" class="icon-btn tooltip" data-tip="Switch Theme" aria-label="Toggle Dark and Light Mode">
+                <svg id="themeIcon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="workspace" role="main">
+
+        <!-- Calculator Chassis -->
+        <section class="calculator-container" aria-label="Scientific Calculator">
+
+            <!-- High-Res Display Unit -->
+            <div class="calc-display">
+                <!-- Status Badges -->
+                <div class="display-status-bar">
+                    <div class="badges-group">
+                        <button id="angleToggleBadge" class="status-badge clickable active" title="Click to toggle DEG / RAD mode">DEG</button>
+                        <span id="secondBadge" class="status-badge">2nd</span>
+                        <span id="hypBadge" class="status-badge">HYP</span>
+                        <span id="memoryBadge" class="status-badge" title="Memory active">M</span>
+                    </div>
+
+                    <div class="display-actions">
+                        <button id="copyDisplayBtn" class="display-copy-btn" title="Copy result to clipboard">
+                            <svg viewBox="0 0 24 24">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Upper Formula Line -->
+                <div class="expression-scroll" id="exprScroll">
+                    <div id="expressionText" class="expression-text"></div>
+                </div>
+
+                <!-- Live Preview Line -->
+                <div class="preview-line">
+                    <span id="previewText" class="preview-text"></span>
+                </div>
+
+                <!-- Primary Result Line -->
+                <div class="result-container" id="resultScroll">
+                    <div id="resultText" class="result-text">0</div>
+                </div>
+            </div>
+
+            <!-- Keypad Rows -->
+            <div class="keypad" id="calculatorKeypad">
+
+                <!-- Row 1: Function toggles & Trig -->
+                <div class="key-row">
+                    <button class="btn-key btn-sci" data-action="toggle-second" id="btn2nd">2<sup>nd</sup></button>
+                    <button class="btn-key btn-sci" data-action="toggle-angle" id="btnAngle">rad</button>
+                    <button class="btn-key btn-sci" data-action="toggle-hyp" id="btnHyp">hyp</button>
+                    <button class="btn-key btn-sci" data-insert="sin(" id="btnSin">sin</button>
+                    <button class="btn-key btn-sci" data-insert="cos(" id="btnCos">cos</button>
+                    <button class="btn-key btn-sci" data-insert="tan(" id="btnTan">tan</button>
+                    <button class="btn-key btn-sci" data-insert="π">π</button>
+                </div>
+
+                <!-- Row 2: Powers, Roots & Exponents -->
+                <div class="key-row">
+                    <button class="btn-key btn-sci" data-insert="e">e</button>
+                    <button class="btn-key btn-sci" data-insert="^2" id="btnSquare">x<sup>2</sup></button>
+                    <button class="btn-key btn-sci" data-insert="^3" id="btnCube">x<sup>3</sup></button>
+                    <button class="btn-key btn-sci" data-insert="^" id="btnPower">x<sup>y</sup></button>
+                    <button class="btn-key btn-sci" data-insert="sqrt(" id="btnSqrt">√x</button>
+                    <button class="btn-key btn-sci" data-insert="cbrt(" id="btnCbrt">∛x</button>
+                    <button class="btn-key btn-sci" data-insert="root(" id="btnYRoot"><sup>y</sup>√x</button>
+                </div>
+
+                <!-- Row 3: Logarithms & Math Tools -->
+                <div class="key-row">
+                    <button class="btn-key btn-sci" data-insert="ln(" id="btnLn">ln</button>
+                    <button class="btn-key btn-sci" data-insert="log(" id="btnLog">log</button>
+                    <button class="btn-key btn-sci" data-insert="log2(">log<sub>2</sub></button>
+                    <button class="btn-key btn-sci" data-insert="^(-1)">1/x</button>
+                    <button class="btn-key btn-sci" data-insert="abs(">|x|</button>
+                    <button class="btn-key btn-sci" data-insert="!">n!</button>
+                    <button class="btn-key btn-sci" data-action="rand">Rand</button>
+                </div>
+
+                <!-- Row 4: Memory & Control Registers -->
+                <div class="key-row">
+                    <button class="btn-key btn-mem" data-action="mem-clear">MC</button>
+                    <button class="btn-key btn-mem" data-action="mem-recall">MR</button>
+                    <button class="btn-key btn-mem" data-action="mem-add">M+</button>
+                    <button class="btn-key btn-mem" data-action="mem-sub">M−</button>
+                    <button class="btn-key btn-mem" data-action="mem-store">MS</button>
+                    <button class="btn-key btn-sci" data-insert="(">(</button>
+                    <button class="btn-key btn-sci" data-insert=")">)</button>
+                </div>
+
+                <!-- Row 5: Numerical Keypad 1 -->
+                <div class="key-row">
+                    <button class="btn-key btn-num" data-insert="7">7</button>
+                    <button class="btn-key btn-num" data-insert="8">8</button>
+                    <button class="btn-key btn-num" data-insert="9">9</button>
+                    <button class="btn-key btn-op" data-insert="÷">÷</button>
+                    <button class="btn-key btn-sci" data-insert="%">%</button>
+                    <button class="btn-key btn-danger" data-action="delete" id="btnDel">DEL</button>
+                    <button class="btn-key btn-danger" data-action="clear" id="btnAC">AC</button>
+                </div>
+
+                <!-- Row 6: Numerical Keypad 2 -->
+                <div class="key-row">
+                    <button class="btn-key btn-num" data-insert="4">4</button>
+                    <button class="btn-key btn-num" data-insert="5">5</button>
+                    <button class="btn-key btn-num" data-insert="6">6</button>
+                    <button class="btn-key btn-op" data-insert="×">×</button>
+                    <button class="btn-key btn-sci" data-insert="e" title="Scientific Exponential">EXP</button>
+                    <button class="btn-key btn-sci" data-action="negate">±</button>
+                    <button class="btn-key btn-sci" data-insert="Ans">Ans</button>
+                </div>
+
+                <!-- Row 7: Numerical Keypad 3 -->
+                <div class="key-row">
+                    <button class="btn-key btn-num" data-insert="1">1</button>
+                    <button class="btn-key btn-num" data-insert="2">2</button>
+                    <button class="btn-key btn-num" data-insert="3">3</button>
+                    <button class="btn-key btn-op" data-insert="−">−</button>
+                    <button class="btn-key btn-num" data-insert=".">.</button>
+                    <button class="btn-key btn-sci" data-insert="10^(" style="grid-column: span 2;">10<sup>x</sup></button>
+                </div>
+
+                <!-- Row 8: Wide Zero, Plus & Glowing Equals Bar -->
+                <div class="key-row">
+                    <button class="btn-key btn-num" data-insert="0" style="grid-column: span 2;">0</button>
+                    <button class="btn-key btn-op" data-insert="+">+</button>
+                    <button class="btn-key btn-equals" data-action="calculate" id="btnEquals" style="grid-column: span 4;">=</button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Sidebar / Side Panels (History, Chemistry & Physics Constants, Converter) -->
+        <aside class="side-panels-wrap" aria-label="Reference and Tools">
+            <div class="panel-card">
+                <div class="panel-tabs">
+                    <button class="panel-tab active" data-tab="tabHistory">History</button>
+                    <button class="panel-tab" data-tab="tabConstants">Constants</button>
+                    <button class="panel-tab" data-tab="tabConverter">Converter</button>
+                </div>
+
+                <!-- History Panel -->
+                <div id="tabHistory" class="tab-content">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <span>Calculation Log</span>
+                        </div>
+                        <div class="panel-actions">
+                            <button id="clearHistoryBtn" class="panel-btn">Clear</button>
+                        </div>
+                    </div>
+                    <div class="panel-body" id="historyList">
+                        <div class="history-empty">No calculations recorded yet</div>
+                    </div>
+                </div>
+
+                <!-- Constants Library -->
+                <div id="tabConstants" class="tab-content" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><path d="M10 2v7.31L4.66 17.5A2 2 0 0 0 6.36 20h11.28a2 2 0 0 0 1.7-2.5L14 9.31V2"></path></svg>
+                            <span>Scientific Constants</span>
+                        </div>
+                        <span style="font-size: 0.72rem; color: var(--text-muted);">Click to insert</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="constants-grid">
+                            <div class="constant-item" data-val="299792458">
+                                <div class="constant-info">
+                                    <span class="constant-name">c (Speed of Light)</span>
+                                    <span class="constant-desc">2.9979 × 10⁸ m/s</span>
+                                </div>
+                                <span class="constant-val">c</span>
+                            </div>
+                            <div class="constant-item" data-val="6.62607015e-34">
+                                <div class="constant-info">
+                                    <span class="constant-name">h (Planck Constant)</span>
+                                    <span class="constant-desc">6.6261 × 10⁻³⁴ J·s</span>
+                                </div>
+                                <span class="constant-val">h</span>
+                            </div>
+                            <div class="constant-item" data-val="6.02214076e23">
+                                <div class="constant-info">
+                                    <span class="constant-name">N_A (Avogadro Constant)</span>
+                                    <span class="constant-desc">6.0221 × 10²³ mol⁻¹</span>
+                                </div>
+                                <span class="constant-val">N_A</span>
+                            </div>
+                            <div class="constant-item" data-val="8.314462618">
+                                <div class="constant-info">
+                                    <span class="constant-name">R (Gas Constant)</span>
+                                    <span class="constant-desc">8.3145 J/(mol·K)</span>
+                                </div>
+                                <span class="constant-val">R</span>
+                            </div>
+                            <div class="constant-item" data-val="96485.33212">
+                                <div class="constant-info">
+                                    <span class="constant-name">F (Faraday Constant)</span>
+                                    <span class="constant-desc">96,485.33 C/mol</span>
+                                </div>
+                                <span class="constant-val">F</span>
+                            </div>
+                            <div class="constant-item" data-val="1.380649e-23">
+                                <div class="constant-info">
+                                    <span class="constant-name">k_B (Boltzmann)</span>
+                                    <span class="constant-desc">1.3806 × 10⁻²³ J/K</span>
+                                </div>
+                                <span class="constant-val">k_B</span>
+                            </div>
+                            <div class="constant-item" data-val="1.602176634e-19">
+                                <div class="constant-info">
+                                    <span class="constant-name">e⁻ (Elementary Charge)</span>
+                                    <span class="constant-desc">1.6022 × 10⁻¹⁹ C</span>
+                                </div>
+                                <span class="constant-val">q</span>
+                            </div>
+                            <div class="constant-item" data-val="9.80665">
+                                <div class="constant-info">
+                                    <span class="constant-name">g (Standard Gravity)</span>
+                                    <span class="constant-desc">9.8067 m/s²</span>
+                                </div>
+                                <span class="constant-val">g</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Unit Converter -->
+                <div id="tabConverter" class="tab-content" style="display: none;">
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                            <span>Science Converter</span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <div class="converter-wrap">
+                            <div class="converter-field">
+                                <label for="converterCategory">Category</label>
+                                <select id="converterCategory">
+                                    <option value="temp">Temperature</option>
+                                    <option value="pressure">Pressure</option>
+                                    <option value="energy">Energy</option>
+                                    <option value="mass">Mass</option>
+                                </select>
+                            </div>
+
+                            <div class="converter-row">
+                                <div class="converter-field">
+                                    <label for="convertInput">From</label>
+                                    <input type="number" id="convertInput" value="100">
+                                </div>
+                                <div class="converter-field">
+                                    <label for="convertUnitFrom">Unit</label>
+                                    <select id="convertUnitFrom"></select>
+                                </div>
+                            </div>
+
+                            <div class="converter-row">
+                                <div class="converter-field">
+                                    <label for="convertResult">To</label>
+                                    <input type="text" id="convertResult" readonly>
+                                </div>
+                                <div class="converter-field">
+                                    <label for="convertUnitTo">Unit</label>
+                                    <select id="convertUnitTo"></select>
+                                </div>
+                            </div>
+
+                            <button id="insertConvertedBtn" class="btn-key btn-sci" style="min-height: 38px; margin-top: 0.25rem;">
+                                Insert Into Calculator
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Modal for Keyboard Shortcuts -->
+    <div id="shortcutsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="shortcutsModalTitle">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2 id="shortcutsModalTitle" class="modal-title">Keyboard Shortcuts</h2>
+                <button id="closeModalBtn" class="panel-btn" aria-label="Close modal">✕</button>
+            </div>
+            <div class="shortcuts-grid">
+                <div class="shortcut-item"><span>Numbers</span><kbd>0 - 9</kbd></div>
+                <div class="shortcut-item"><span>Calculate</span><kbd>Enter</kbd> or <kbd>=</kbd></div>
+                <div class="shortcut-item"><span>Basic Ops</span><kbd>+</kbd> <kbd>-</kbd> <kbd>*</kbd> <kbd>/</kbd></div>
+                <div class="shortcut-item"><span>Power</span><kbd>^</kbd></div>
+                <div class="shortcut-item"><span>Parentheses</span><kbd>(</kbd> <kbd>)</kbd></div>
+                <div class="shortcut-item"><span>Clear All</span><kbd>Escape</kbd></div>
+                <div class="shortcut-item"><span>Delete Last</span><kbd>Backspace</kbd></div>
+                <div class="shortcut-item"><span>Sine / Cos / Tan</span><kbd>s</kbd> <kbd>c</kbd> <kbd>t</kbd></div>
+                <div class="shortcut-item"><span>Square Root</span><kbd>r</kbd></div>
+                <div class="shortcut-item"><span>Natural Log</span><kbd>l</kbd></div>
+                <div class="shortcut-item"><span>Log10</span><kbd>g</kbd></div>
+                <div class="shortcut-item"><span>Pi (π)</span><kbd>p</kbd></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">Copied to clipboard!</div>
+
+    <!-- ============================================================
+       APPLICATION LOGIC & ROBUST EXPRESSION EVALUATOR
+    ============================================================ -->
+    <script>
+        /**
+         * Web Audio Synthesizer for tactile click effects
+         */
+        class SoundEngine {
+            constructor() {
+                this.enabled = true;
+                this.audioCtx = null;
+            }
+
+            init() {
+                if (!this.audioCtx && (window.AudioContext || window.webkitAudioContext)) {
+                    this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            }
+
+            playClick(freq = 600, duration = 0.03, type = 'sine') {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    if (!this.audioCtx) return;
+                    if (this.audioCtx.state === 'suspended') {
+                        this.audioCtx.resume();
+                    }
+
+                    const osc = this.audioCtx.createOscillator();
+                    const gain = this.audioCtx.createGain();
+
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(120, this.audioCtx.currentTime + duration);
+
+                    gain.gain.setValueAtTime(0.08, this.audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(this.audioCtx.destination);
+
+                    osc.start();
+                    osc.stop(this.audioCtx.currentTime + duration);
+                } catch (e) {
+                    // Audio ignored safely if autoplay prevented
+                }
+            }
+
+            playSuccess() {
+                if (!this.enabled) return;
+                this.playClick(880, 0.07, 'sine');
+                setTimeout(() => this.playClick(1320, 0.08, 'sine'), 50);
+            }
+        }
+
+        /**
+         * Mathematical Expression Parser & AST Evaluator
+         */
+        class MathEngine {
+            constructor(options = {}) {
+                this.angleMode = options.angleMode || 'DEG';
+                this.ans = options.ans || 0;
+            }
+
+            tokenize(rawExpr) {
+                let s = rawExpr
+                    .replace(/×/g, '*')
+                    .replace(/÷/g, '/')
+                    .replace(/−/g, '-')
+                    .replace(/π/g, ' pi ')
+                    .replace(/²/g, '^2')
+                    .replace(/³/g, '^3');
+
+                const tokenRegex = /\s*([0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?|[a-zA-Z_][a-zA-Z0-9_]*|\+|-|\*|\/|\^|%|!|\(|\)|,)\s*/g;
+                let match;
+                const rawTokens = [];
+                let lastIdx = 0;
+
+                while ((match = tokenRegex.exec(s)) !== null) {
+                    if (match.index !== lastIdx) {
+                        throw new Error('Unexpected symbol: ' + s.slice(lastIdx, match.index));
+                    }
+                    rawTokens.push(match[1]);
+                    lastIdx = tokenRegex.lastIndex;
+                }
+                if (lastIdx < s.length) {
+                    throw new Error('Unexpected symbol: ' + s.slice(lastIdx));
+                }
+
+                // Insert implicit multiplication
+                const tokens = [];
+                const isValOrClose = t => /^[0-9]/.test(t) || ['pi', 'e', 'phi', 'ans', ')', '!'].includes(t.toLowerCase());
+                const isValOrOpenOrFn = t => /^[0-9]/.test(t) || ['pi', 'e', 'phi', 'ans', '('].includes(t.toLowerCase()) || /^[a-zA-Z_]/.test(t);
+
+                for (let i = 0; i < rawTokens.length; i++) {
+                    const curr = rawTokens[i];
+                    if (i > 0) {
+                        const prev = rawTokens[i - 1];
+                        if (isValOrClose(prev) && isValOrOpenOrFn(curr)) {
+                            if (!(/^[a-zA-Z_]/.test(prev) && !['pi', 'e', 'phi', 'ans'].includes(prev.toLowerCase()))) {
+                                tokens.push('*');
+                            }
+                        }
+                    }
+                    tokens.push(curr);
+                }
+
+                return tokens;
+            }
+
+            evaluate(expr) {
+                if (!expr || !expr.trim()) return 0;
+                const tokens = this.tokenize(expr);
+                if (tokens.length === 0) return 0;
+
+                let pos = 0;
+                const peek = () => tokens[pos];
+                const consume = () => tokens[pos++];
+
+                const parseExpr = () => {
+                    let node = parseTerm();
+                    while (peek() === '+' || peek() === '-') {
+                        const op = consume();
+                        node = { type: 'Binary', op, left: node, right: parseTerm() };
+                    }
+                    return node;
+                };
+
+                const parseTerm = () => {
+                    let node = parseUnary();
+                    while (peek() === '*' || peek() === '/' || peek() === '%') {
+                        const op = consume();
+                        node = { type: 'Binary', op, left: node, right: parseUnary() };
+                    }
+                    return node;
+                };
+
+                const parseUnary = () => {
+                    if (peek() === '-') {
+                        consume();
+                        return { type: 'Unary', op: '-', arg: parseUnary() };
+                    }
+                    if (peek() === '+') {
+                        consume();
+                        return parseUnary();
+                    }
+                    return parsePower();
+                };
+
+                const parsePower = () => {
+                    let node = parsePostfix();
+                    if (peek() === '^') {
+                        consume();
+                        const right = parseUnary();
+                        node = { type: 'Binary', op: '^', left: node, right };
+                    }
+                    return node;
+                };
+
+                const parsePostfix = () => {
+                    let node = parsePrimary();
+                    while (peek() === '!' || peek() === '%') {
+                        const op = consume();
+                        node = { type: 'Postfix', op, arg: node };
+                    }
+                    return node;
+                };
+
+                const parsePrimary = () => {
+                    const tok = peek();
+                    if (!tok) throw new Error('Incomplete expression');
+
+                    if (/^[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$/.test(tok)) {
+                        consume();
+                        return { type: 'Number', value: parseFloat(tok) };
+                    }
+
+                    if (tok === '(') {
+                        consume();
+                        const node = parseExpr();
+                        if (peek() !== ')') throw new Error('Unclosed parenthesis');
+                        consume();
+                        return node;
+                    }
+
+                    const lower = tok.toLowerCase();
+                    if (['pi', 'e', 'phi', 'ans'].includes(lower)) {
+                        consume();
+                        let val;
+                        if (lower === 'pi') val = Math.PI;
+                        else if (lower === 'e') val = Math.E;
+                        else if (lower === 'phi') val = (1 + Math.sqrt(5)) / 2;
+                        else if (lower === 'ans') val = this.ans;
+                        return { type: 'Number', value: val };
+                    }
+
+                    if (/^[a-zA-Z_]/.test(tok)) {
+                        const fnName = consume().toLowerCase();
+                        if (peek() !== '(') throw new Error(`Missing '(' after ${fnName}`);
+                        consume();
+                        const args = [];
+                        if (peek() !== ')') {
+                            args.push(parseExpr());
+                            while (peek() === ',') {
+                                consume();
+                                args.push(parseExpr());
+                            }
+                        }
+                        if (peek() !== ')') throw new Error(`Missing ')' for ${fnName}`);
+                        consume();
+                        return { type: 'Call', fn: fnName, args };
+                    }
+
+                    throw new Error(`Unexpected token: ${tok}`);
+                };
+
+                const ast = parseExpr();
+                if (pos < tokens.length) {
+                    throw new Error(`Unexpected syntax near ${tokens[pos]}`);
+                }
+
+                const evalNode = (node) => {
+                    switch (node.type) {
+                        case 'Number': return node.value;
+                        case 'Unary': {
+                            const val = evalNode(node.arg);
+                            return node.op === '-' ? -val : val;
+                        }
+                        case 'Postfix': {
+                            const val = evalNode(node.arg);
+                            if (node.op === '!') {
+                                if (val < 0 || !Number.isInteger(val)) {
+                                    throw new Error('Factorial requires non-negative integer');
+                                }
+                                if (val > 170) return Infinity;
+                                let res = 1;
+                                for (let i = 2; i <= val; i++) res *= i;
+                                return res;
+                            }
+                            if (node.op === '%') return val / 100;
+                            throw new Error('Unknown postfix ' + node.op);
+                        }
+                        case 'Binary': {
+                            const left = evalNode(node.left);
+                            const right = evalNode(node.right);
+                            switch (node.op) {
+                                case '+': return left + right;
+                                case '-': return left - right;
+                                case '*': return left * right;
+                                case '/':
+                                    if (right === 0) throw new Error('Cannot divide by zero');
+                                    return left / right;
+                                case '%': return left % right;
+                                case '^': return Math.pow(left, right);
+                                default: throw new Error('Unknown operator ' + node.op);
+                            }
+                        }
+                        case 'Call': {
+                            const args = node.args.map(evalNode);
+                            const fn = node.fn;
+                            const toRad = deg => deg * (Math.PI / 180);
+                            const toDeg = rad => rad * (180 / Math.PI);
+                            const isDeg = this.angleMode === 'DEG';
+
+                            switch (fn) {
+                                case 'sin': {
+                                    const arg = isDeg ? toRad(args[0]) : args[0];
+                                    const v = Math.sin(arg);
+                                    return Math.abs(v) < 1e-15 ? 0 : v;
+                                }
+                                case 'cos': {
+                                    const arg = isDeg ? toRad(args[0]) : args[0];
+                                    const v = Math.cos(arg);
+                                    return Math.abs(v) < 1e-15 ? 0 : v;
+                                }
+                                case 'tan': {
+                                    if (isDeg && Math.abs((args[0] - 90) % 180) < 1e-10) {
+                                        throw new Error('Undefined (tan 90°)');
+                                    }
+                                    const arg = isDeg ? toRad(args[0]) : args[0];
+                                    const v = Math.tan(arg);
+                                    return Math.abs(v) < 1e-15 ? 0 : v;
+                                }
+                                case 'asin': {
+                                    if (args[0] < -1 || args[0] > 1) throw new Error('Domain error for asin');
+                                    const rad = Math.asin(args[0]);
+                                    return isDeg ? toDeg(rad) : rad;
+                                }
+                                case 'acos': {
+                                    if (args[0] < -1 || args[0] > 1) throw new Error('Domain error for acos');
+                                    const rad = Math.acos(args[0]);
+                                    return isDeg ? toDeg(rad) : rad;
+                                }
+                                case 'atan': {
+                                    const rad = Math.atan(args[0]);
+                                    return isDeg ? toDeg(rad) : rad;
+                                }
+                                case 'sinh': return Math.sinh(args[0]);
+                                case 'cosh': return Math.cosh(args[0]);
+                                case 'tanh': return Math.tanh(args[0]);
+                                case 'asinh': return Math.asinh(args[0]);
+                                case 'acosh': return Math.acosh(args[0]);
+                                case 'atanh': return Math.atanh(args[0]);
+                                case 'sqrt':
+                                    if (args[0] < 0) throw new Error('Negative square root');
+                                    return Math.sqrt(args[0]);
+                                case 'cbrt': return Math.cbrt(args[0]);
+                                case 'ln':
+                                    if (args[0] <= 0) throw new Error('ln requires positive number');
+                                    return Math.log(args[0]);
+                                case 'log':
+                                    if (args[0] <= 0) throw new Error('log requires positive number');
+                                    return Math.log10(args[0]);
+                                case 'log2':
+                                    if (args[0] <= 0) throw new Error('log2 requires positive number');
+                                    return Math.log2(args[0]);
+                                case 'exp': return Math.exp(args[0]);
+                                case 'abs': return Math.abs(args[0]);
+                                case 'root': {
+                                    const [x, y] = args;
+                                    if (y === 0) throw new Error('Zeroth root is undefined');
+                                    return Math.pow(x, 1 / y);
+                                }
+                                default:
+                                    throw new Error(`Unknown function: ${fn}`);
+                            }
+                        }
+                    }
+                };
+
+                return evalNode(ast);
+            }
+        }
+
+        /**
+         * Scientific Calculator UI Controller
+         */
+        class CalculatorApp {
+            constructor() {
+                this.sound = new SoundEngine();
+                this.expression = '';
+                this.lastAnswer = 0;
+                this.justCalculated = false;
+                this.memory = 0;
+                this.hasMemory = false;
+                this.angleMode = 'DEG';
+                this.secondActive = false;
+                this.hypActive = false;
+                this.history = [];
+
+                // Elements
+                this.exprEl = document.getElementById('expressionText');
+                this.resultEl = document.getElementById('resultText');
+                this.previewEl = document.getElementById('previewText');
+                this.exprScroll = document.getElementById('exprScroll');
+                this.resultScroll = document.getElementById('resultScroll');
+                this.angleBadge = document.getElementById('angleToggleBadge');
+                this.secondBadge = document.getElementById('secondBadge');
+                this.hypBadge = document.getElementById('hypBadge');
+                this.memoryBadge = document.getElementById('memoryBadge');
+                this.btnAngle = document.getElementById('btnAngle');
+                this.btn2nd = document.getElementById('btn2nd');
+                this.btnHyp = document.getElementById('btnHyp');
+                this.toast = document.getElementById('toast');
+
+                // Dynamic buttons
+                this.btnSin = document.getElementById('btnSin');
+                this.btnCos = document.getElementById('btnCos');
+                this.btnTan = document.getElementById('btnTan');
+                this.btnSquare = document.getElementById('btnSquare');
+                this.btnCube = document.getElementById('btnCube');
+                this.btnSqrt = document.getElementById('btnSqrt');
+                this.btnCbrt = document.getElementById('btnCbrt');
+                this.btnLn = document.getElementById('btnLn');
+                this.btnLog = document.getElementById('btnLog');
+
+                this.initStorage();
+                this.initEvents();
+                this.initConverter();
+                this.updateDisplay();
+            }
+
+            initStorage() {
+                try {
+                    const savedHist = localStorage.getItem('sofia_calc_history');
+                    if (savedHist) this.history = JSON.parse(savedHist);
+                    const savedAngle = localStorage.getItem('sofia_calc_angle');
+                    if (savedAngle) this.angleMode = savedAngle;
+                    const savedTheme = localStorage.getItem('sofia_calc_theme') || 'dark';
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                    const savedSound = localStorage.getItem('sofia_calc_sound');
+                    if (savedSound !== null) {
+                        this.sound.enabled = savedSound === 'true';
+                        const soundBtn = document.getElementById('soundToggleBtn');
+                        soundBtn.classList.toggle('active', this.sound.enabled);
+                        soundBtn.setAttribute('data-tip', this.sound.enabled ? 'Sound FX: On' : 'Sound FX: Off');
+                    }
+                } catch (e) {
+                    console.warn('Storage unavailable', e);
+                }
+                this.renderHistory();
+            }
+
+            initEvents() {
+                const keypad = document.getElementById('calculatorKeypad');
+                keypad.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.btn-key');
+                    if (!btn) return;
+
+                    const insertVal = btn.getAttribute('data-insert');
+                    const action = btn.getAttribute('data-action');
+
+                    this.animateButton(btn);
+
+                    if (insertVal) {
+                        this.handleInsert(insertVal);
+                    } else if (action) {
+                        this.handleAction(action);
+                    }
+                });
+
+                this.angleBadge.addEventListener('click', () => this.toggleAngleMode());
+                document.getElementById('copyDisplayBtn').addEventListener('click', () => this.copyToClipboard());
+                document.getElementById('clearHistoryBtn').addEventListener('click', () => this.clearHistory());
+
+                const soundBtn = document.getElementById('soundToggleBtn');
+                soundBtn.addEventListener('click', () => {
+                    this.sound.enabled = !this.sound.enabled;
+                    soundBtn.classList.toggle('active', this.sound.enabled);
+                    soundBtn.setAttribute('data-tip', this.sound.enabled ? 'Sound FX: On' : 'Sound FX: Off');
+                    try { localStorage.setItem('sofia_calc_sound', this.sound.enabled); } catch (_) {}
+                    if (this.sound.enabled) this.sound.playClick(800, 0.04);
+                });
+
+                const themeBtn = document.getElementById('themeToggleBtn');
+                themeBtn.addEventListener('click', () => {
+                    const current = document.documentElement.getAttribute('data-theme');
+                    const next = current === 'dark' ? 'light' : 'dark';
+                    document.documentElement.setAttribute('data-theme', next);
+                    try { localStorage.setItem('sofia_calc_theme', next); } catch (_) {}
+                    this.sound.playClick(700, 0.03);
+                });
+
+                const shortcutsModal = document.getElementById('shortcutsModal');
+                document.getElementById('shortcutsBtn').addEventListener('click', () => shortcutsModal.classList.add('open'));
+                document.getElementById('closeModalBtn').addEventListener('click', () => shortcutsModal.classList.remove('open'));
+                shortcutsModal.addEventListener('click', (e) => {
+                    if (e.target === shortcutsModal) shortcutsModal.classList.remove('open');
+                });
+
+                document.querySelectorAll('.panel-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+                        document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+                        tab.classList.add('active');
+                        const target = tab.getAttribute('data-tab');
+                        document.getElementById(target).style.display = 'block';
+                        this.sound.playClick(650, 0.02);
+                    });
+                });
+
+                document.querySelectorAll('.constant-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const val = item.getAttribute('data-val');
+                        this.handleInsert(val);
+                        this.showToast(`Inserted ${item.querySelector('.constant-name').textContent.split(' ')[0]}`);
+                    });
+                });
+
+                window.addEventListener('keydown', (e) => this.handleKeyboard(e));
+            }
+
+            animateButton(btn) {
+                btn.classList.add('active-press');
+                setTimeout(() => btn.classList.remove('active-press'), 120);
+            }
+
+            handleInsert(str) {
+                this.sound.playClick(600, 0.03);
+
+                // Smart Answer Chaining
+                const isOperator = /^([+−×÷^%]|(\^2)|(\^3)|(\^\(-1\)))/.test(str);
+                if (this.justCalculated) {
+                    if (isOperator) {
+                        this.expression = 'Ans' + str;
+                    } else {
+                        this.expression = str;
+                    }
+                    this.justCalculated = false;
+                } else {
+                    this.expression += str;
+                }
+                this.updateDisplay();
+            }
+
+            handleAction(action) {
+                switch (action) {
+                    case 'calculate':
+                        this.calculate();
+                        break;
+                    case 'clear':
+                        this.sound.playClick(400, 0.05);
+                        this.expression = '';
+                        this.resultEl.textContent = '0';
+                        this.resultEl.classList.remove('error');
+                        this.previewEl.textContent = '';
+                        this.justCalculated = false;
+                        this.updateDisplay();
+                        break;
+                    case 'delete':
+                        this.sound.playClick(500, 0.03);
+                        this.handleBackspace();
+                        break;
+                    case 'negate':
+                        this.sound.playClick(580, 0.03);
+                        this.toggleNegate();
+                        break;
+                    case 'toggle-angle':
+                        this.toggleAngleMode();
+                        break;
+                    case 'toggle-second':
+                        this.toggleSecond();
+                        break;
+                    case 'toggle-hyp':
+                        this.toggleHyp();
+                        break;
+                    case 'rand':
+                        this.sound.playClick(720, 0.03);
+                        const r = Math.random().toFixed(4);
+                        this.handleInsert(r);
+                        break;
+                    case 'mem-clear':
+                        this.memory = 0;
+                        this.hasMemory = false;
+                        this.memoryBadge.classList.remove('active');
+                        this.showToast('Memory Cleared');
+                        this.sound.playClick(450, 0.03);
+                        break;
+                    case 'mem-recall':
+                        if (this.hasMemory) {
+                            this.handleInsert(this.memory.toString());
+                        }
+                        break;
+                    case 'mem-add':
+                        this.modifyMemory(1);
+                        break;
+                    case 'mem-sub':
+                        this.modifyMemory(-1);
+                        break;
+                    case 'mem-store':
+                        this.storeMemory();
+                        break;
+                }
+            }
+
+            handleBackspace() {
+                if (this.justCalculated) {
+                    this.expression = '';
+                    this.justCalculated = false;
+                    this.updateDisplay();
+                    return;
+                }
+                if (!this.expression) return;
+                const fnMatch = this.expression.match(/([a-zA-Z0-9_]+)\($/);
+                if (fnMatch) {
+                    this.expression = this.expression.slice(0, -fnMatch[0].length);
+                } else {
+                    this.expression = this.expression.slice(0, -1);
+                }
+                this.updateDisplay();
+            }
+
+            toggleNegate() {
+                if (!this.expression) {
+                    this.expression = '-';
+                    this.updateDisplay();
+                    return;
+                }
+                const lastNumMatch = this.expression.match(/(-?[0-9]+(?:\.[0-9]+)?)$/);
+                if (lastNumMatch) {
+                    const numStr = lastNumMatch[1];
+                    const startIdx = this.expression.length - numStr.length;
+                    if (numStr.startsWith('-')) {
+                        this.expression = this.expression.slice(0, startIdx) + numStr.slice(1);
+                    } else {
+                        this.expression = this.expression.slice(0, startIdx) + '-' + numStr;
+                    }
+                } else {
+                    this.expression += '-';
+                }
+                this.updateDisplay();
+            }
+
+            toggleAngleMode() {
+                this.angleMode = this.angleMode === 'DEG' ? 'RAD' : 'DEG';
+                this.angleBadge.textContent = this.angleMode;
+                this.btnAngle.textContent = this.angleMode === 'DEG' ? 'rad' : 'deg';
+                try { localStorage.setItem('sofia_calc_angle', this.angleMode); } catch (_) {}
+                this.sound.playClick(750, 0.04);
+                this.updateLivePreview();
+            }
+
+            toggleSecond() {
+                this.secondActive = !this.secondActive;
+                this.secondBadge.classList.toggle('active', this.secondActive);
+                this.btn2nd.classList.toggle('active-mode', this.secondActive);
+                this.updateFunctionKeys();
+                this.sound.playClick(650, 0.03);
+            }
+
+            toggleHyp() {
+                this.hypActive = !this.hypActive;
+                this.hypBadge.classList.toggle('active', this.hypActive);
+                this.btnHyp.classList.toggle('active-mode', this.hypActive);
+                this.updateFunctionKeys();
+                this.sound.playClick(650, 0.03);
+            }
+
+            updateFunctionKeys() {
+                if (this.secondActive && this.hypActive) {
+                    this.btnSin.innerHTML = 'asinh';
+                    this.btnSin.setAttribute('data-insert', 'asinh(');
+                    this.btnCos.innerHTML = 'acosh';
+                    this.btnCos.setAttribute('data-insert', 'acosh(');
+                    this.btnTan.innerHTML = 'atanh';
+                    this.btnTan.setAttribute('data-insert', 'atanh(');
+                } else if (this.hypActive) {
+                    this.btnSin.innerHTML = 'sinh';
+                    this.btnSin.setAttribute('data-insert', 'sinh(');
+                    this.btnCos.innerHTML = 'cosh';
+                    this.btnCos.setAttribute('data-insert', 'cosh(');
+                    this.btnTan.innerHTML = 'tanh';
+                    this.btnTan.setAttribute('data-insert', 'tanh(');
+                } else if (this.secondActive) {
+                    this.btnSin.innerHTML = 'sin<sup>-1</sup>';
+                    this.btnSin.setAttribute('data-insert', 'asin(');
+                    this.btnCos.innerHTML = 'cos<sup>-1</sup>';
+                    this.btnCos.setAttribute('data-insert', 'acos(');
+                    this.btnTan.innerHTML = 'tan<sup>-1</sup>';
+                    this.btnTan.setAttribute('data-insert', 'atan(');
+
+                    this.btnLn.innerHTML = 'e<sup>x</sup>';
+                    this.btnLn.setAttribute('data-insert', 'exp(');
+                    this.btnLog.innerHTML = '10<sup>x</sup>';
+                    this.btnLog.setAttribute('data-insert', '10^(');
+                } else {
+                    this.btnSin.innerHTML = 'sin';
+                    this.btnSin.setAttribute('data-insert', 'sin(');
+                    this.btnCos.innerHTML = 'cos';
+                    this.btnCos.setAttribute('data-insert', 'cos(');
+                    this.btnTan.innerHTML = 'tan';
+                    this.btnTan.setAttribute('data-insert', 'tan(');
+
+                    this.btnLn.innerHTML = 'ln';
+                    this.btnLn.setAttribute('data-insert', 'ln(');
+                    this.btnLog.innerHTML = 'log';
+                    this.btnLog.setAttribute('data-insert', 'log(');
+                }
+            }
+
+            modifyMemory(direction) {
+                const currentVal = this.getCurrentValue();
+                if (isNaN(currentVal)) return;
+                this.memory += direction * currentVal;
+                this.hasMemory = true;
+                this.memoryBadge.classList.add('active');
+                this.showToast(`Memory: ${this.formatNumber(this.memory)}`);
+                this.sound.playClick(600, 0.03);
+            }
+
+            storeMemory() {
+                const currentVal = this.getCurrentValue();
+                if (isNaN(currentVal)) return;
+                this.memory = currentVal;
+                this.hasMemory = true;
+                this.memoryBadge.classList.add('active');
+                this.showToast(`Stored in Memory: ${this.formatNumber(this.memory)}`);
+                this.sound.playClick(650, 0.03);
+            }
+
+            getCurrentValue() {
+                if (!this.expression) return this.lastAnswer;
+                try {
+                    const engine = new MathEngine({ angleMode: this.angleMode, ans: this.lastAnswer });
+                    return engine.evaluate(this.expression);
+                } catch (_) {
+                    return this.lastAnswer;
+                }
+            }
+
+            calculate() {
+                if (!this.expression) return;
+                try {
+                    const engine = new MathEngine({ angleMode: this.angleMode, ans: this.lastAnswer });
+                    const val = engine.evaluate(this.expression);
+
+                    if (isNaN(val)) throw new Error('Invalid calculation');
+                    const formatted = this.formatNumber(val);
+
+                    this.addHistory(this.expression, formatted);
+
+                    this.lastAnswer = val;
+                    this.resultEl.textContent = formatted;
+                    this.resultEl.classList.remove('error');
+                    this.previewEl.textContent = '';
+                    this.exprEl.textContent = this.expression + ' =';
+                    this.justCalculated = true;
+
+                    this.sound.playSuccess();
+                } catch (err) {
+                    this.resultEl.textContent = err.message || 'Error';
+                    this.resultEl.classList.add('error');
+                    this.sound.playClick(240, 0.12, 'sawtooth');
+                }
+            }
+
+            updateDisplay() {
+                this.exprEl.textContent = this.expression;
+                this.exprScroll.scrollLeft = this.exprScroll.scrollWidth;
+                this.updateLivePreview();
+            }
+
+            updateLivePreview() {
+                if (!this.expression || this.expression.trim() === '') {
+                    this.previewEl.textContent = '';
+                    return;
+                }
+                try {
+                    const engine = new MathEngine({ angleMode: this.angleMode, ans: this.lastAnswer });
+                    const val = engine.evaluate(this.expression);
+                    if (!isNaN(val) && isFinite(val)) {
+                        this.previewEl.textContent = '= ' + this.formatNumber(val);
+                    } else {
+                        this.previewEl.textContent = '';
+                    }
+                } catch (_) {
+                    this.previewEl.textContent = '';
+                }
+            }
+
+            formatNumber(num) {
+                if (isNaN(num)) return 'Error';
+                if (!isFinite(num)) return num > 0 ? 'Infinity' : '-Infinity';
+                if (num === 0) return '0';
+
+                const clean = Number(num.toPrecision(13));
+                const abs = Math.abs(clean);
+
+                if (abs >= 1e14 || (abs < 1e-7 && abs > 0)) {
+                    return clean.toExponential(6).replace('e+', 'e');
+                }
+
+                const str = clean.toString();
+                if (str.includes('e')) return str;
+                const parts = str.split('.');
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                return parts.join('.');
+            }
+
+            addHistory(expr, result) {
+                this.history.unshift({ expr, result, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+                if (this.history.length > 30) this.history.pop();
+                try { localStorage.setItem('sofia_calc_history', JSON.stringify(this.history)); } catch (_) {}
+                this.renderHistory();
+            }
+
+            renderHistory() {
+                const list = document.getElementById('historyList');
+                if (this.history.length === 0) {
+                    list.innerHTML = '<div class="history-empty">No calculations recorded yet</div>';
+                    return;
+                }
+                list.innerHTML = this.history.map((item, idx) => `
+                    <div class="history-item" data-idx="${idx}">
+                        <div class="hist-expr">${this.escapeHtml(item.expr)}</div>
+                        <div class="hist-res">${this.escapeHtml(item.result)}</div>
+                    </div>
+                `).join('');
+
+                list.querySelectorAll('.history-item').forEach(el => {
+                    el.addEventListener('click', () => {
+                        const idx = el.getAttribute('data-idx');
+                        const item = this.history[idx];
+                        if (item) {
+                            this.handleInsert(item.result.replace(/,/g, ''));
+                            this.showToast('Appended from History');
+                        }
+                    });
+                });
+            }
+
+            clearHistory() {
+                this.history = [];
+                try { localStorage.removeItem('sofia_calc_history'); } catch (_) {}
+                this.renderHistory();
+                this.showToast('History Cleared');
+            }
+
+            copyToClipboard() {
+                const textToCopy = this.resultEl.textContent !== '0' ? this.resultEl.textContent : (this.expression || '0');
+                const clean = textToCopy.replace(/,/g, '');
+                navigator.clipboard.writeText(clean).then(() => {
+                    this.showToast(`Copied ${clean}`);
+                }).catch(() => {
+                    this.showToast('Unable to copy');
+                });
+            }
+
+            showToast(msg) {
+                this.toast.textContent = msg;
+                this.toast.classList.add('show');
+                clearTimeout(this.toastTimeout);
+                this.toastTimeout = setTimeout(() => this.toast.classList.remove('show'), 2200);
+            }
+
+            escapeHtml(str) {
+                return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+
+            handleKeyboard(e) {
+                if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+                const key = e.key;
+
+                if (/[0-9]/.test(key)) {
+                    this.handleInsert(key);
+                } else if (key === '+') {
+                    this.handleInsert('+');
+                } else if (key === '-') {
+                    this.handleInsert('−');
+                } else if (key === '*') {
+                    this.handleInsert('×');
+                } else if (key === '/') {
+                    e.preventDefault();
+                    this.handleInsert('÷');
+                } else if (key === '^') {
+                    this.handleInsert('^');
+                } else if (key === '%') {
+                    this.handleInsert('%');
+                } else if (key === '!') {
+                    this.handleInsert('!');
+                } else if (key === '(' || key === ')') {
+                    this.handleInsert(key);
+                } else if (key === '.' || key === ',') {
+                    this.handleInsert('.');
+                } else if (key === 'Enter' || key === '=') {
+                    e.preventDefault();
+                    this.calculate();
+                } else if (key === 'Backspace') {
+                    this.handleBackspace();
+                } else if (key === 'Escape') {
+                    this.handleAction('clear');
+                } else if (key === 's') {
+                    this.handleInsert('sin(');
+                } else if (key === 'c') {
+                    this.handleInsert('cos(');
+                } else if (key === 't') {
+                    this.handleInsert('tan(');
+                } else if (key === 'l') {
+                    this.handleInsert('ln(');
+                } else if (key === 'g') {
+                    this.handleInsert('log(');
+                } else if (key === 'r') {
+                    this.handleInsert('sqrt(');
+                } else if (key === 'p') {
+                    this.handleInsert('π');
+                } else if (key === 'e') {
+                    this.handleInsert('e');
+                }
+            }
+
+            initConverter() {
+                const categoryEl = document.getElementById('converterCategory');
+                const fromUnitEl = document.getElementById('convertUnitFrom');
+                const toUnitEl = document.getElementById('convertUnitTo');
+                const inputEl = document.getElementById('convertInput');
+                const resultEl = document.getElementById('convertResult');
+
+                const unitsData = {
+                    temp: ['Celsius', 'Fahrenheit', 'Kelvin'],
+                    pressure: ['atm', 'Pascal (Pa)', 'bar', 'mmHg (Torr)', 'psi'],
+                    energy: ['Joule (J)', 'kJ', 'calorie (cal)', 'kcal', 'electronvolt (eV)'],
+                    mass: ['gram (g)', 'kilogram (kg)', 'milligram (mg)', 'pound (lb)', 'ounce (oz)']
+                };
+
+                const populateUnits = () => {
+                    const cat = categoryEl.value;
+                    const units = unitsData[cat] || [];
+                    fromUnitEl.innerHTML = units.map((u, i) => `<option value="${u}">${u}</option>`).join('');
+                    toUnitEl.innerHTML = units.map((u, i) => `<option value="${u}" ${i === 1 ? 'selected' : ''}>${u}</option>`).join('');
+                    runConversion();
+                };
+
+                const runConversion = () => {
+                    const cat = categoryEl.value;
+                    const val = parseFloat(inputEl.value);
+                    if (isNaN(val)) {
+                        resultEl.value = 'Invalid';
+                        return;
+                    }
+                    const from = fromUnitEl.value;
+                    const to = toUnitEl.value;
+
+                    let res = 0;
+                    if (cat === 'temp') {
+                        let c = val;
+                        if (from === 'Fahrenheit') c = (val - 32) * 5/9;
+                        else if (from === 'Kelvin') c = val - 273.15;
+
+                        if (to === 'Celsius') res = c;
+                        else if (to === 'Fahrenheit') res = (c * 9/5) + 32;
+                        else if (to === 'Kelvin') res = c + 273.15;
+                    } else if (cat === 'pressure') {
+                        const toPa = {
+                            'Pascal (Pa)': 1,
+                            'atm': 101325,
+                            'bar': 100000,
+                            'mmHg (Torr)': 133.322,
+                            'psi': 6894.76
+                        };
+                        const pa = val * (toPa[from] || 1);
+                        res = pa / (toPa[to] || 1);
+                    } else if (cat === 'energy') {
+                        const toJ = {
+                            'Joule (J)': 1,
+                            'kJ': 1000,
+                            'calorie (cal)': 4.184,
+                            'kcal': 4184,
+                            'electronvolt (eV)': 1.602176634e-19
+                        };
+                        const j = val * (toJ[from] || 1);
+                        res = j / (toJ[to] || 1);
+                    } else if (cat === 'mass') {
+                        const toG = {
+                            'gram (g)': 1,
+                            'kilogram (kg)': 1000,
+                            'milligram (mg)': 0.001,
+                            'pound (lb)': 453.59237,
+                            'ounce (oz)': 28.34952
+                        };
+                        const g = val * (toG[from] || 1);
+                        res = g / (toG[to] || 1);
+                    }
+
+                    resultEl.value = Number(res.toPrecision(7)).toString();
+                };
+
+                categoryEl.addEventListener('change', populateUnits);
+                fromUnitEl.addEventListener('change', runConversion);
+                toUnitEl.addEventListener('change', runConversion);
+                inputEl.addEventListener('input', runConversion);
+
+                document.getElementById('insertConvertedBtn').addEventListener('click', () => {
+                    const val = resultEl.value;
+                    if (val && val !== 'Invalid') {
+                        this.handleInsert(val);
+                        this.showToast(`Inserted ${val}`);
+                    }
+                });
+
+                populateUnits();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.calcApp = new CalculatorApp();
+        });
+    </script>
+</body>
+</html>
